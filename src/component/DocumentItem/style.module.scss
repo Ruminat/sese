@@ -1,0 +1,19 @@
+.item {
+  padding: 8px 16px;
+  border-radius: 8px;
+  background-color: var(--g-color-base-generic-ultralight);
+  transition: background-color 0.2s;
+  cursor: pointer;
+
+  &:hover {
+    background-color: var(--g-color-base-simple-hover);
+  }
+}
+
+.actions {
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+.item:hover .actions {
+  opacity: 1;
+}

@@ -1,19 +1,34 @@
-import "./App.css";
-import logo from "./logo.svg";
+import { Button, Flex, Text, ThemeProvider } from "@gravity-ui/uikit";
+import { useStore } from "@nanostores/react";
+import { Layout, useFn } from "@shreklabs/ui";
+import { DocumentItem } from "./component/DocumentItem";
+import { TDocument } from "./models/Document/definitions";
+import { $documents } from "./models/Document/store";
+import cls from "./style.module.scss";
 
 function App() {
+  const onSelect = useFn((document: TDocument) => {
+    console.log("SELECTED", document);
+  });
+
+  const documents = useStore($documents);
+
   return (
-    <div className='App'>
-      <header className='App-header'>
-        <img src={logo} className='App-logo' alt='logo' />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a className='App-link' href='https://reactjs.org' target='_blank' rel='noopener noreferrer'>
-          Learn React
-        </a>
-      </header>
-    </div>
+    <ThemeProvider theme='system'>
+      <Layout>
+        <Flex className={cls.page} direction='column' gap={4}>
+          <Flex alignItems='center' justifyContent='space-between'>
+            <Text variant='header-2'>Documents</Text>
+            <Button view='action' disabled>
+              Persist changes
+            </Button>
+          </Flex>
+          {documents.map((document) => (
+            <DocumentItem key={document.code} document={document} onSelect={onSelect} />
+          ))}
+        </Flex>
+      </Layout>
+    </ThemeProvider>
   );
 }
 
