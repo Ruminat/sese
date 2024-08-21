@@ -1,9 +1,9 @@
 export type TDocument = {
   secret: boolean;
-  title: string;
+  name: string;
   code: string;
   content: string;
   createdAt: number;
 };
 
-export type TDocumentForm = Pick<TDocument, "secret" | "title" | "content">;
+export type TDocumentForm = Pick<TDocument, "secret" | "name" | "content">;

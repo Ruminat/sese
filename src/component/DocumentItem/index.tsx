@@ -1,20 +1,18 @@
 import { File, Lock, TrashBin } from "@gravity-ui/icons";
 import { Button, Flex, Icon, Popup, Text, Tooltip } from "@gravity-ui/uikit";
 import { useFn } from "@shreklabs/ui";
+import dayjs from "dayjs";
 import { memo, MouseEventHandler, useMemo, useRef, useState } from "react";
 import { TDocument } from "../../models/Document/definitions";
-import { deleteDocument } from "../../models/Document/sagas/deleteDocument";
+import { $SelectedDocument, Document } from "../../models/Document/store";
 import cls from "./style.module.scss";
-import dayjs from "dayjs";
-import { Document } from "../../models/Document/store";
 
 type TProps = {
   document: TDocument;
-  onSelect: (document: TDocument) => void;
 };
 
 export const DocumentItem = memo(function DocumentItem(props: TProps) {
-  const { secret, code, title, createdAt } = props.document;
+  const { secret, code, name: title, createdAt } = props.document;
 
   const icon = useMemo(() => {
     const content = (
@@ -50,10 +48,7 @@ export const DocumentItem = memo(function DocumentItem(props: TProps) {
     [code, title, createdAt]
   );
 
-  const onDelete = useFn(() => {
-    // deleteDocument(props.document);
-    Document.Remove(props.document);
-  });
+  const onDelete = useFn(() => Document.Remove(props.document));
 
   const actions = useMemo(
     () => (
@@ -64,7 +59,7 @@ export const DocumentItem = memo(function DocumentItem(props: TProps) {
     [onDelete]
   );
 
-  const onSelect = useFn(() => props.onSelect(props.document));
+  const onSelect = useFn(() => $SelectedDocument.set(props.document));
 
   return (
     <Flex className={cls.item} alignItems='center' justifyContent='space-between' onClick={onSelect}>

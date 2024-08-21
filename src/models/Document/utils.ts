@@ -3,7 +3,7 @@ import { TDocument } from "./definitions";
 export function createEmptyDocument(): TDocument {
   return {
     secret: true,
-    title: "",
+    name: "",
     code: "",
     content: "",
     createdAt: Date.now(),

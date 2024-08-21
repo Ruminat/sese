@@ -1,14 +1,23 @@
 import { atom } from "nanostores";
-import { DOCUMENTS } from "../../documents";
 import { TDocument } from "./definitions";
 
-export const $documents = atom<TDocument[]>(DOCUMENTS);
+export const $Documents = atom<TDocument[]>([]);
+export const $SelectedDocument = atom<TDocument | undefined>(undefined);
 
 export const Document = {
+  Set: (documents: TDocument[]) => {
+    $Documents.set(documents);
+    $SelectedDocument.set(undefined);
+  },
   Add: (document: TDocument) => {
-    $documents.set([document, ...$documents.get()]);
+    $Documents.set([document, ...$Documents.get()]);
   },
   Remove: (document: TDocument) => {
-    $documents.set($documents.get().filter(({ code }) => code !== document.code));
+    $Documents.set($Documents.get().filter(({ code }) => code !== document.code));
+
+    const selected = $SelectedDocument.get();
+    if (selected && document.code === selected.code) {
+      $SelectedDocument.set(undefined);
+    }
   },
 };
