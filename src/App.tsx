@@ -6,10 +6,11 @@ import { AppActions } from "./component/AppActions";
 import { DocumentDialog } from "./component/DocumentDialog";
 import { DocumentItem } from "./component/DocumentItem";
 import { TAppState } from "./definitions";
-import { $Documents, Documents } from "./models/Document/store";
+import { $Documents, $SelectedDocument, Documents } from "./models/Document/store";
 import { useHotkeys } from "./models/Hotkey/hooks";
 import { LocalStorage } from "./models/LocalStorage/store";
 import cls from "./style.module.scss";
+import { DocumentContent } from "./component/DocumentContent";
 
 const settings = {
   fetchItems: true,
@@ -19,6 +20,7 @@ const settings = {
 function App() {
   const [loaded, setLoaded] = useState(false);
   const documents = useStore($Documents);
+  const selectedDocument = useStore($SelectedDocument);
 
   useHotkeys();
 
@@ -68,6 +70,7 @@ function App() {
         </Flex>
 
         <DocumentDialog />
+        {selectedDocument ? <DocumentContent document={selectedDocument} /> : null}
       </Layout>
     </ThemeProvider>
   );

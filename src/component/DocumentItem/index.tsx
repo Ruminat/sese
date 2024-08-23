@@ -3,8 +3,9 @@ import { Button, Flex, Icon, Popup, Text, Tooltip } from "@gravity-ui/uikit";
 import { useFn } from "@shreklabs/ui";
 import dayjs from "dayjs";
 import { memo, MouseEventHandler, useMemo, useRef, useState } from "react";
+import { stopPropagation } from "../../common/DOM/utils";
 import { TDocument } from "../../models/Document/definitions";
-import { $SelectedDocument, Documents } from "../../models/Document/store";
+import { Documents } from "../../models/Document/store";
 import cls from "./style.module.scss";
 
 type TProps = {
@@ -59,7 +60,7 @@ export const DocumentItem = memo(function DocumentItem(props: TProps) {
     [onDelete]
   );
 
-  const onSelect = useFn(() => $SelectedDocument.set(props.document));
+  const onSelect = useFn(() => Documents.Select(props.document));
 
   return (
     <Flex className={cls.item} alignItems='center' justifyContent='space-between' onClick={onSelect}>
@@ -77,23 +78,26 @@ function DocumentDeleteAction(props: { onDelete: () => void }) {
   const [opened, setOpened] = useState(false);
 
   const onClose = useFn(() => setOpened(false));
+
   const onToggleOpened = useFn(() => setOpened(!opened));
+
   const onDelete = useFn(() => {
     onClose();
     props.onDelete();
   });
-  const onClick: MouseEventHandler = useFn((event) => {
+
+  const onClickTrashBin: MouseEventHandler = useFn((event) => {
     onToggleOpened();
     event.stopPropagation();
   });
 
   return (
     <>
-      <Button ref={ref} size='s' view='flat-danger' onClick={onClick}>
+      <Button ref={ref} view='flat-danger' onClick={onClickTrashBin}>
         <Icon data={TrashBin} />
       </Button>
       <Popup open={opened} autoFocus={false} anchorRef={ref} onEscapeKeyDown={onClose} onOutsideClick={onClose}>
-        <Flex direction='column' gap={2} style={{ padding: "12px", textAlign: "center" }}>
+        <Flex className={cls.popup} direction='column' gap={2} onClick={stopPropagation}>
           <Text>
             You're going to <Text color='danger'>delete</Text> this document!
             <br />
