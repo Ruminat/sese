@@ -19,7 +19,7 @@ export const AppActions = memo(function AppActions({ loaded }: { loaded: boolean
   return (
     <Flex gap={2}>
       <Button
-        disabled={!!loaded}
+        disabled={!loaded}
         onClick={() => {
           console.log("CLICKED");
           openCreateDocumentDialog();

@@ -4,7 +4,7 @@ import { useFn } from "@shreklabs/ui";
 import dayjs from "dayjs";
 import { memo, MouseEventHandler, useMemo, useRef, useState } from "react";
 import { TDocument } from "../../models/Document/definitions";
-import { $SelectedDocument, Document } from "../../models/Document/store";
+import { $SelectedDocument, Documents } from "../../models/Document/store";
 import cls from "./style.module.scss";
 
 type TProps = {
@@ -48,7 +48,7 @@ export const DocumentItem = memo(function DocumentItem(props: TProps) {
     [code, title, createdAt]
   );
 
-  const onDelete = useFn(() => Document.Remove(props.document));
+  const onDelete = useFn(() => Documents.Remove(props.document));
 
   const actions = useMemo(
     () => (

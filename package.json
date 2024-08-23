@@ -11,7 +11,9 @@
     "@nanostores/react": "^0.7.3",
     "@shreklabs/core": "^1.0.11",
     "@shreklabs/ui": "^1.0.0",
+    "@types/lodash": "^4.17.7",
     "copy-to-clipboard": "^3.3.3",
+    "cyrillic-to-translit-js": "^3.2.1",
     "dayjs": "^1.11.13",
     "immer": "^10.1.1",
     "lodash": "^4.17.21",
@@ -25,7 +27,8 @@
     "dev": "react-scripts start",
     "eject": "react-scripts eject",
     "predeploy": "npm run build",
-    "start": "npm run dev"
+    "start": "npm run dev",
+    "upload": "aws s3 cp ./notes/data.json s3://sese/data"
   },
   "eslintConfig": {
     "extends": [

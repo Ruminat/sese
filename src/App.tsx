@@ -5,15 +5,16 @@ import { useEffect, useState } from "react";
 import { AppActions } from "./component/AppActions";
 import { DocumentDialog } from "./component/DocumentDialog";
 import { DocumentItem } from "./component/DocumentItem";
-import { $Documents, Document } from "./models/Document/store";
-import cls from "./style.module.scss";
+import { TAppState } from "./definitions";
+import { $Documents, Documents } from "./models/Document/store";
 import { useHotkeys } from "./models/Hotkey/hooks";
+import { LocalStorage } from "./models/LocalStorage/store";
+import cls from "./style.module.scss";
 
-const dialogs = (
-  <>
-    <DocumentDialog />
-  </>
-);
+const settings = {
+  fetchItems: true,
+  useCache: true,
+};
 
 function App() {
   const [loaded, setLoaded] = useState(false);
@@ -24,13 +25,20 @@ function App() {
   useEffect(() => {
     const abortController = new AbortController();
 
-    if (Math.random() > 10) {
+    if (settings.fetchItems) {
+      if (settings.useCache) {
+        const state = LocalStorage.app.state.read();
+        processAppState(state);
+        setLoaded(true);
+        return;
+      }
+
       fetch("https://storage.yandexcloud.net/sese/data", { mode: "cors" })
         .then((result) => result.json())
         .then((result) => {
-          if (result.documents) {
-            Document.Set(result.documents);
-          }
+          LocalStorage.app.state.write(result);
+
+          processAppState(result);
         })
         .catch((error) => {
           console.log("Main saga error", error);
@@ -59,10 +67,16 @@ function App() {
             : renderLoading()}
         </Flex>
 
-        {dialogs}
+        <DocumentDialog />
       </Layout>
     </ThemeProvider>
   );
+}
+
+function processAppState(state: TAppState) {
+  if (state.documents) {
+    Documents.Set(state.documents);
+  }
 }
 
 function renderLoading() {

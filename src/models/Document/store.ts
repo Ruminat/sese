@@ -4,7 +4,7 @@ import { TDocument } from "./definitions";
 export const $Documents = atom<TDocument[]>([]);
 export const $SelectedDocument = atom<TDocument | undefined>(undefined);
 
-export const Document = {
+export const Documents = {
   Set: (documents: TDocument[]) => {
     $Documents.set(documents);
     $SelectedDocument.set(undefined);
