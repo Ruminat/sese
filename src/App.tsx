@@ -2,20 +2,16 @@ import { Flex, Loader, Text, ThemeProvider } from "@gravity-ui/uikit";
 import { useStore } from "@nanostores/react";
 import { Layout } from "@shreklabs/ui";
 import { useEffect, useState } from "react";
+import { getStorageType, STORAGE_TYPE } from "./common/environment";
 import { AppActions } from "./component/AppActions";
+import { DocumentContent } from "./component/DocumentContent";
 import { DocumentDialog } from "./component/DocumentDialog";
 import { DocumentItem } from "./component/DocumentItem";
-import { TAppState } from "./definitions";
-import { $Documents, $SelectedDocument, Documents } from "./models/Document/store";
+import { loadAppState } from "./models/App/sagas";
+import { $Documents, $SelectedDocument } from "./models/Document/store";
 import { useHotkeys } from "./models/Hotkey/hooks";
 import { LocalStorage } from "./models/LocalStorage/store";
 import cls from "./style.module.scss";
-import { DocumentContent } from "./component/DocumentContent";
-
-const settings = {
-  fetchItems: true,
-  useCache: true,
-};
 
 function App() {
   const [loaded, setLoaded] = useState(false);
@@ -27,28 +23,27 @@ function App() {
   useEffect(() => {
     const abortController = new AbortController();
 
-    if (settings.fetchItems) {
-      if (settings.useCache) {
-        const state = LocalStorage.app.state.read();
-        processAppState(state);
-        setLoaded(true);
-        return;
-      }
+    if (getStorageType() === STORAGE_TYPE.localStorage) {
+      const state = LocalStorage.app.state.read();
 
-      fetch("https://storage.yandexcloud.net/sese/data", { mode: "cors" })
-        .then((result) => result.json())
-        .then((result) => {
-          LocalStorage.app.state.write(result);
+      loadAppState(state);
 
-          processAppState(result);
-        })
-        .catch((error) => {
-          console.log("Main saga error", error);
-        })
-        .finally(() => {
-          setLoaded(true);
-        });
+      setLoaded(true);
+
+      return;
     }
+
+    fetch("https://storage.yandexcloud.net/sese/data", { mode: "cors" })
+      .then((result) => result.json())
+      .then((result) => {
+        loadAppState(result);
+      })
+      .catch((error) => {
+        console.log("Main saga error", error);
+      })
+      .finally(() => {
+        setLoaded(true);
+      });
 
     return () => {
       abortController.abort();
@@ -74,12 +69,6 @@ function App() {
       </Layout>
     </ThemeProvider>
   );
-}
-
-function processAppState(state: TAppState) {
-  if (state.documents) {
-    Documents.Set(state.documents);
-  }
 }
 
 function renderLoading() {

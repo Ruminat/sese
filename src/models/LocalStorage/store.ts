@@ -1,5 +1,5 @@
 import { map } from "nanostores";
-import { TAppState } from "../../definitions";
+import type { TAppState } from "../App/definitions";
 
 const defaults: Record<string, unknown> = {};
 
