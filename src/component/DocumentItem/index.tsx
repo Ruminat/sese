@@ -6,6 +6,7 @@ import { memo, MouseEventHandler, useMemo, useRef, useState } from "react";
 import { stopPropagation } from "../../common/DOM/utils";
 import { TDocument } from "../../models/Document/definitions";
 import { Documents } from "../../models/Document/store";
+import { openDocumentContentDialog } from "../DocumentContent";
 import cls from "./style.module.scss";
 
 type TProps = {
@@ -60,7 +61,10 @@ export const DocumentItem = memo(function DocumentItem(props: TProps) {
     [onDelete]
   );
 
-  const onSelect = useFn(() => Documents.Select(props.document));
+  const onSelect = useFn(() => {
+    Documents.Select(props.document);
+    openDocumentContentDialog({ document: props.document });
+  });
 
   return (
     <Flex className={cls.item} alignItems='center' justifyContent='space-between' onClick={onSelect}>

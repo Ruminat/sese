@@ -1,38 +1,10 @@
-.container {
-  width: 100%;
-  height: 100%;
-  position: fixed;
-  z-index: 100;
-  background: var(--g-color-base-modal);
-  opacity: 0;
-  transition: opacity 0.3s;
-}
-.container.visible {
-  opacity: 1;
-}
-
-.close {
-  position: absolute;
-  right: 16px;
-  top: 16px;
-}
-
-.content {
-  max-width: 1080px;
+.dialog .content textarea {
+  width: 80vw;
   padding: 16px;
-  max-height: 80vh;
+  max-height: calc(100vh - 240px);
   border-radius: 8px;
   overflow-y: auto;
   word-break: break-word;
   white-space: pre;
   font-family: var(--g-font-family-monospace);
-  background-color: var(--g-color-base-generic);
-}
-
-.actions {
-  width: 120px;
-}
-
-.actionButton {
-  width: 100%;
 }

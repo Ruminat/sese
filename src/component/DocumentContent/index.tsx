@@ -1,60 +1,61 @@
-import { Xmark } from "@gravity-ui/icons";
-import { Button, Flex, Icon, TextArea } from "@gravity-ui/uikit";
-import { delay } from "@shreklabs/core";
+import { Dialog, Flex, TextArea } from "@gravity-ui/uikit";
 import { useCloseOnEsc, useFn } from "@shreklabs/ui";
-import { memo, useEffect, useMemo, useRef } from "react";
+import { memo, useState } from "react";
 import { TDocument } from "../../models/Document/definitions";
 import { Documents } from "../../models/Document/store";
+import { createDialog } from "../Dialog";
 import cls from "./style.module.scss";
-import { useDocumentContentActions } from "./hooks";
 
 type TProps = {
   document: TDocument;
 };
 
-export const DocumentContent = memo(function DocumentContent(props: TProps) {
-  const ref = useRef<HTMLDivElement>(null);
+type TDialogProps = {
+  onClose: () => void;
+} & TProps;
 
-  useEffect(() => {
-    const container = ref.current;
+const { openDialog, useDialog } = createDialog<TProps>();
 
-    delay(10).then(() => {
-      container?.classList.add(cls.visible);
-    });
+export const openDocumentContentDialog = openDialog;
 
-    return () => {
-      container?.classList.remove(cls.visible);
-    };
-  }, []);
+export const DocumentContentDialog = memo(function DocumentDialog() {
+  const { open, propsRef, onClose } = useDialog();
 
-  const { renderedEdit, actions } = useDocumentContentActions(props.document);
+  return open ? <DocumentContentDialogComponent {...(propsRef.current as TProps)} onClose={onClose} /> : null;
+});
+
+const DocumentContentDialogComponent = memo(function DocumentContentDialogComponent(props: TDialogProps) {
+  const [content, setContent] = useState(props.document.content);
 
   const onClose = useFn(() => {
+    if (content !== props.document.content) {
+      Documents.Update(props.document.code, { content });
+    }
+
+    props.onClose();
+
     Documents.Select(undefined);
   });
 
   useCloseOnEsc(onClose);
 
-  const exit = useMemo(
-    () => (
-      <Flex className={cls.close}>
-        <Button view='flat' onClick={onClose}>
-          <Icon data={Xmark} />
-        </Button>
-      </Flex>
-    ),
-    [onClose]
-  );
-
   return (
-    <Flex className={cls.container} ref={ref} alignItems='center' justifyContent='center'>
-      <Flex gap={4}>
-        {renderedEdit ?? <div className={cls.content}>{props.document.content}</div>}
-        <Flex className={cls.actions} direction='column' justifyContent='center' gap={2}>
-          {actions}
+    <Dialog className={cls.dialog} open={true} onClose={onClose} disableAutoFocus={true}>
+      <Dialog.Header caption='New document' />
+      <Dialog.Body className={cls.body}>
+        <Flex gap={4}>
+          {
+            <TextArea
+              className={cls.content}
+              value={content}
+              onUpdate={setContent}
+              autoFocus={true}
+              controlProps={{ spellCheck: false }}
+            />
+          }
         </Flex>
-      </Flex>
-      {exit}
-    </Flex>
+      </Dialog.Body>
+      <Dialog.Footer textButtonCancel='Close' onClickButtonCancel={onClose} />
+    </Dialog>
   );
 });

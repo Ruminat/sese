@@ -4,11 +4,11 @@ import { Layout } from "@shreklabs/ui";
 import { useEffect, useState } from "react";
 import { getStorageType, STORAGE_TYPE } from "./common/environment";
 import { AppActions } from "./component/AppActions";
-import { DocumentContent } from "./component/DocumentContent";
+import { DocumentContentDialog } from "./component/DocumentContent";
 import { DocumentDialog } from "./component/DocumentDialog";
 import { DocumentItem } from "./component/DocumentItem";
-import { loadAppState } from "./models/App/sagas";
-import { $Documents, $SelectedDocument } from "./models/Document/store";
+import { loadAppState, updateSavedAppStateOnStoreChanges } from "./models/App/sagas";
+import { $Documents } from "./models/Document/store";
 import { useHotkeys } from "./models/Hotkey/hooks";
 import { LocalStorage } from "./models/LocalStorage/store";
 import cls from "./style.module.scss";
@@ -16,7 +16,6 @@ import cls from "./style.module.scss";
 function App() {
   const [loaded, setLoaded] = useState(false);
   const documents = useStore($Documents);
-  const selectedDocument = useStore($SelectedDocument);
 
   useHotkeys();
 
@@ -27,8 +26,8 @@ function App() {
       const state = LocalStorage.app.state.read();
 
       loadAppState(state);
-
       setLoaded(true);
+      updateSavedAppStateOnStoreChanges();
 
       return;
     }
@@ -65,7 +64,7 @@ function App() {
         </Flex>
 
         <DocumentDialog />
-        {selectedDocument ? <DocumentContent document={selectedDocument} /> : null}
+        <DocumentContentDialog />
       </Layout>
     </ThemeProvider>
   );

@@ -24,3 +24,7 @@ export function saveAppState() {
       return copy(JSON.stringify(appState));
   }
 }
+
+export function updateSavedAppStateOnStoreChanges() {
+  $Documents.subscribe(saveAppState);
+}

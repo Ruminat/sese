@@ -18,7 +18,7 @@ export const Documents = {
   Update: (code: TDocument["code"], updated: Partial<TDocument>) => {
     const currentDocuments = $Documents.get();
     const newDocuments = currentDocuments.map((document) =>
-      document.code === code ? { ...document, updated } : document
+      document.code === code ? { ...document, ...updated } : document
     );
     $Documents.set(newDocuments);
   },
