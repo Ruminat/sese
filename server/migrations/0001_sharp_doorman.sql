@@ -1,0 +1,1 @@
+CREATE INDEX `idx_documents_updated_at` ON `documents` (`updated_at`);
